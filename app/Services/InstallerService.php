@@ -217,9 +217,10 @@ class InstallerService
     {
         $this->reloadDatabaseConfig();
 
-        // Drop stale migrations table from any previous failed install attempt
-        // so all migrations run from scratch (safe — all migrations are idempotent)
-        Schema::dropIfExists('migrations');
+        // Wipe entire database from any previous failed install attempt
+        // so all migrations run from a clean slate (avoids stale tables with
+        // incompatible column types like bigint vs UUID foreign keys).
+        Artisan::call('db:wipe', ['--force' => true]);
 
         // Run migrations
         Artisan::call('migrate', ['--force' => true]);
