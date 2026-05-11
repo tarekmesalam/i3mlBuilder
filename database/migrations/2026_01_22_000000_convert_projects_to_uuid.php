@@ -8,10 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Drop tables that reference projects (fresh start)
+        // Drop tables that reference projects (fresh start / retry-safe install)
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('project_files');
         Schema::dropIfExists('project_shares');
         Schema::dropIfExists('build_credit_usage');
         Schema::dropIfExists('projects');
+        Schema::enableForeignKeyConstraints();
 
         // Recreate projects with UUID primary key
         if (! Schema::hasTable('projects')) {
@@ -75,8 +78,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('project_files');
         Schema::dropIfExists('build_credit_usage');
         Schema::dropIfExists('project_shares');
         Schema::dropIfExists('projects');
+        Schema::enableForeignKeyConstraints();
     }
 };
