@@ -3,7 +3,7 @@ import { Link, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { GradientBackground } from '@/components/Dashboard/GradientBackground';
-import { ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, AlertCircle, Sparkles } from 'lucide-react';
 import { useScramble } from 'use-scramble';
 import { TrustedBy } from './TrustedBy';
 import { useTranslation } from '@/contexts/LanguageContext';
@@ -208,18 +208,57 @@ export function HeroSection({
     };
 
     return (
-        <section className="relative h-dvh flex flex-col items-center justify-center px-4 pt-16 pb-32 sm:pb-24 bg-background">
+        <section className="relative min-h-dvh flex flex-col items-center justify-center px-4 pt-20 pb-32 sm:pb-24 bg-background overflow-hidden">
             <GradientBackground />
 
+            {/* Aurora grid glow background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* Grid */}
+                <div
+                    className="absolute inset-0 opacity-60"
+                    style={{
+                        backgroundImage:
+                            'linear-gradient(to right, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px)',
+                        backgroundSize: '40px 40px',
+                        WebkitMaskImage:
+                            'radial-gradient(ellipse 60% 50% at 50% 50%, #000 70%, transparent 100%)',
+                        maskImage:
+                            'radial-gradient(ellipse 60% 50% at 50% 50%, #000 70%, transparent 100%)',
+                    }}
+                />
+                {/* Aurora glows */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] rounded-full mix-blend-screen blur-[140px] animate-pulse"
+                    style={{ backgroundColor: 'color-mix(in oklab, var(--primary) 18%, transparent)' }}
+                />
+                <div className="absolute top-1/4 left-1/5 w-[420px] h-[420px] rounded-full mix-blend-screen blur-[120px]"
+                    style={{ backgroundColor: 'color-mix(in oklab, var(--primary) 12%, transparent)' }}
+                />
+                <div className="absolute bottom-1/4 right-1/5 w-[420px] h-[420px] rounded-full mix-blend-screen blur-[120px]"
+                    style={{ backgroundColor: 'color-mix(in oklab, var(--primary) 10%, transparent)' }}
+                />
+            </div>
+
             <div className="relative z-10 w-full max-w-4xl mx-auto text-center px-2 sm:px-0">
-                {/* Headline with scramble animation */}
+                {/* Eyebrow badge */}
+                <div className="flex justify-center mb-6 sm:mb-8 animate-fade-in">
+                    <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-primary/25 bg-primary/5 text-primary text-xs sm:text-[13px] font-medium backdrop-blur-sm shadow-[0_0_15px_color-mix(in_oklab,var(--primary)_15%,transparent)]">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                        </span>
+                        <Sparkles className="h-3.5 w-3.5" />
+                        {t('Powered by AI')}
+                    </span>
+                </div>
+
+                {/* Headline with scramble animation + gradient */}
                 <h1
                     ref={headlineRef}
-                    className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tighter mb-3 sm:mb-6"
+                    className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tighter leading-[1.05] mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-b from-foreground via-foreground to-foreground/50"
                 />
 
                 {/* Subtitle */}
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground/90 mb-6 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
                     {subtitle}
                 </p>
 
@@ -247,8 +286,11 @@ export function HeroSection({
 
                 {/* Prompt Input */}
                 <div className="max-w-2xl mx-auto">
-                    <form onSubmit={handleSubmit} className="relative">
-                        <div className="relative bg-card rounded-xl sm:rounded-2xl shadow-lg border border-border/50 overflow-hidden">
+                    <form onSubmit={handleSubmit} className="relative group">
+                        {/* Focus glow */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-primary/25 via-primary/15 to-primary/25 rounded-3xl blur-xl opacity-0 group-focus-within:opacity-100 transition duration-700 pointer-events-none" />
+
+                        <div className="relative bg-card/50 backdrop-blur-2xl rounded-2xl border border-border/60 overflow-hidden shadow-2xl transition-all duration-300 group-focus-within:border-primary/40 group-focus-within:bg-card/70">
                             <div className="relative">
                                 <textarea
                                     ref={textareaRef}
@@ -259,34 +301,32 @@ export function HeroSection({
                                     onKeyDown={handleKeyDown}
                                     placeholder={!showAnimatedPlaceholder ? t('I want to build...') : ""}
                                     disabled={isDisabled}
-                                    className="w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base resize-none focus:outline-none focus:ring-0 border-0 min-h-[80px] sm:min-h-[100px] bg-transparent relative z-10 text-start disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full px-4 sm:px-5 py-4 sm:py-5 text-base sm:text-lg resize-none focus:outline-none focus:ring-0 border-0 min-h-[100px] sm:min-h-[130px] bg-transparent relative z-10 text-start disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-muted-foreground/60"
                                     rows={2}
                                 />
                                 {/* Animated placeholder overlay */}
                                 {showAnimatedPlaceholder && (
                                     <div
-                                        className="absolute inset-0 px-3 sm:px-4 py-3 sm:py-4 pointer-events-none text-muted-foreground/60 text-sm sm:text-base text-start"
+                                        className="absolute inset-0 px-4 sm:px-5 py-4 sm:py-5 pointer-events-none text-muted-foreground/60 text-base sm:text-lg text-start"
                                         onClick={() => textareaRef.current?.focus()}
                                     >
                                         {animatedPlaceholder}
-                                        <span className="inline-block w-0.5 h-5 bg-primary/50 ms-0.5 animate-pulse align-middle" />
+                                        <span className="inline-block w-0.5 h-5 bg-primary/60 ms-0.5 animate-pulse align-middle" />
                                     </div>
                                 )}
                             </div>
-                            <div className="flex items-center justify-between gap-2 px-4 py-3 bg-muted/50 border-t border-border">
+                            <div className="flex items-center justify-between gap-2 px-4 py-3 bg-muted/30 border-t border-border/50">
                                 {/* Keyboard hint */}
-                                <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                                    <span>{t('Press')}</span>
-                                    <kbd className="px-2 py-0.5 bg-card rounded border text-xs">
-                                        ⌘ Enter
-                                    </kbd>
+                                <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                                    <kbd className="px-2 py-1 rounded bg-background/80 border border-border text-[10px] text-foreground/70">⌘</kbd>
+                                    <kbd className="px-2 py-1 rounded bg-background/80 border border-border text-[10px] text-foreground/70">Enter</kbd>
                                     <span>{t('to start')}</span>
                                 </div>
                                 <div className="flex items-center gap-2 ms-auto">
                                     <Button
                                         type="submit"
                                         disabled={!prompt.trim() || isDisabled}
-                                        className="shrink-0 h-10 min-w-[100px] transition-all hover:scale-[1.02] hover:shadow-md"
+                                        className="shrink-0 h-10 min-w-[100px] rounded-xl font-bold transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_color-mix(in_oklab,var(--primary)_35%,transparent)] active:scale-95"
                                     >
                                         <span className="text-sm sm:text-base">
                                             {auth.user ? t('Start') : t('Go')}
@@ -303,7 +343,7 @@ export function HeroSection({
                     </form>
 
                     {/* Suggestions - Marquee */}
-                    <div className="mt-4 sm:mt-6 overflow-hidden max-w-2xl relative">
+                    <div className="mt-6 sm:mt-8 overflow-hidden max-w-2xl relative">
                         {/* Gradient fade on edges */}
                         <div className="absolute start-0 top-0 bottom-0 w-6 sm:w-10 md:w-12 bg-gradient-to-r rtl:bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
                         <div className="absolute end-0 top-0 bottom-0 w-6 sm:w-10 md:w-12 bg-gradient-to-l rtl:bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
@@ -314,7 +354,7 @@ export function HeroSection({
                                     key={`${suggestion}-${index}`}
                                     onClick={() => handleSuggestionClick(suggestion)}
                                     disabled={isDisabled}
-                                    className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-card hover:bg-accent border border-border text-muted-foreground hover:text-foreground transition-colors shadow-sm whitespace-nowrap shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-card"
+                                    className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-card/40 backdrop-blur-md hover:bg-primary/10 border border-border/50 hover:border-primary/30 text-muted-foreground hover:text-foreground transition-all shadow-sm whitespace-nowrap shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-card/40"
                                 >
                                     {suggestion}
                                 </button>
