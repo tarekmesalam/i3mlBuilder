@@ -105,9 +105,9 @@ function ProjectCard({
     };
 
     return (
-        <div className="group relative">
+        <div className="group relative animate-in fade-in slide-in-from-bottom-2 duration-300 fill-mode-both">
             <Link href={isTrash ? '#' : `/project/${project.id}`} className={isTrash ? 'pointer-events-none' : ''}>
-                <div className="aspect-[4/3] rounded-xl border bg-card overflow-hidden mb-3 hover:shadow-lg transition-shadow">
+                <div className="relative aspect-[4/3] rounded-xl border bg-card overflow-hidden mb-3 transition-all duration-300 hover:shadow-xl hover:border-primary/40 hover:-translate-y-0.5">
                     {thumbnailUrl ? (
                         <img
                             src={thumbnailUrl}
@@ -115,10 +115,11 @@ function ProjectCard({
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted/50">
-                            <Folder className="h-12 w-12 text-muted-foreground/30" />
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/40 to-muted/10">
+                            <Folder className="h-12 w-12 text-muted-foreground/30 group-hover:text-primary/50 group-hover:scale-110 transition-all duration-300" />
                         </div>
                     )}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
             </Link>
 
@@ -174,7 +175,7 @@ function ProjectCard({
 
             {/* Star indicator */}
             {project.is_starred && !isTrash && (
-                <Star className="absolute top-2 start-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
+                <Star className="absolute top-2 start-2 h-4 w-4 text-yellow-500 fill-yellow-500 drop-shadow-md animate-in zoom-in-50 duration-200" />
             )}
 
             <div>
@@ -660,8 +661,14 @@ export default function ProjectsIndex({ auth, projects, counts, activeTab, filte
 
                                         {/* Empty state */}
                                         {projects.data.length === 0 && (
-                                            <div className="col-span-full text-center py-12">
-                                                <p className="text-muted-foreground">
+                                            <div className="col-span-full flex flex-col items-center justify-center py-16 animate-in fade-in duration-500">
+                                                <div className="relative mb-4">
+                                                    <div className="absolute inset-0 bg-primary/10 rounded-full blur-2xl" />
+                                                    <div className="relative p-5 rounded-full bg-muted/40 ring-1 ring-border">
+                                                        <Folder className="h-10 w-10 text-muted-foreground/60" />
+                                                    </div>
+                                                </div>
+                                                <p className="text-muted-foreground text-center max-w-sm">
                                                     {getEmptyMessage()}
                                                 </p>
                                             </div>

@@ -28,19 +28,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
     return (
         <Link href={`/project/${project.id}`}>
-            <Card className="group cursor-pointer hover:shadow-lg transition-all duration-200 overflow-hidden bg-card/80 backdrop-blur-sm">
-                <div className="aspect-video bg-muted overflow-hidden">
+            <Card className="group cursor-pointer hover:shadow-xl hover:-translate-y-0.5 hover:border-primary/40 transition-all duration-300 overflow-hidden bg-card/80 backdrop-blur-sm">
+                <div className="relative aspect-video bg-muted overflow-hidden">
                     {project.thumbnail ? (
                         <img
                             src={project.thumbnail}
                             alt={project.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <div className="h-12 w-12 rounded-lg bg-primary/20" />
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/40 to-muted/10">
+                            <div className="h-12 w-12 rounded-lg bg-primary/20 group-hover:scale-110 group-hover:bg-primary/30 transition-all duration-300" />
                         </div>
                     )}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-2">

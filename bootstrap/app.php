@@ -41,4 +41,30 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->report(function (\Throwable $e) {
             app(\App\Services\SentryReporterService::class)->buffer($e);
         });
+
+        // Render Inertia error pages for HTTP exceptions (404, 403, 419, 500, 503).
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, \Throwable $exception, \Illuminate\Http\Request $request) {
+            if (! app()->environment('production') && ! $request->header('X-Inertia')) {
+                return $response;
+            }
+
+            // Skip non-web (api/json) requests
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return $response;
+            }
+
+            $status = $response->getStatusCode();
+            if (! in_array($status, [403, 404, 419, 500, 503], true)) {
+                return $response;
+            }
+
+            $message = method_exists($exception, 'getMessage') ? $exception->getMessage() : null;
+
+            return \Inertia\Inertia::render('Errors/ErrorPage', [
+                'status' => $status,
+                'message' => $status === 500 ? null : $message,
+            ])
+                ->toResponse($request)
+                ->setStatusCode($status);
+        });
     })->create();
