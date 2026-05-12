@@ -263,8 +263,24 @@ export function InspectPreview({
     const handleAiEdit = useCallback((element: InspectorElement) => {
         closeContextMenu();
         const description = `<${element.tagName}${element.classNames[0] ? '.' + element.classNames[0] : ''}>`;
-        onSendStyleEdit?.(`[AI_EDIT] Improve the styling of ${description}: "${element.textPreview}"`);
-    }, [closeContextMenu, onSendStyleEdit]);
+
+        // Prefer the user's pending text edit (typed but not yet saved)
+        // over the original textPreview, so the AI agent searches for the
+        // string the user actually sees rather than the stale original.
+        const pendingTextEdit = pendingEdits.find(
+            e => e.element.id === element.id && e.field === 'text'
+        );
+        const currentText = pendingTextEdit ? pendingTextEdit.newValue : element.textPreview;
+
+        // Escape embedded quotes and backslashes so the agent receives a
+        // well-formed search string.
+        const escapedText = (currentText ?? '')
+            .replace(/\\/g, '\\\\')
+            .replace(/"/g, '\\"');
+
+        onSendStyleEdit?.(`[AI_EDIT] Improve the styling of ${description}: "${escapedText}"`);
+    }, [closeContextMenu, onSendStyleEdit, pendingEdits]);
+
 
     // Handle style panel apply
     const handleStyleApply = useCallback(() => {

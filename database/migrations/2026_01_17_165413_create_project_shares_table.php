@@ -14,12 +14,20 @@ return new class extends Migration
         if (! Schema::hasTable('project_shares')) {
             Schema::create('project_shares', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('project_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                // Explicit unsigned BIGINT to guarantee type match with projects.id / users.id
+                $table->unsignedBigInteger('project_id');
+                $table->unsignedBigInteger('user_id');
                 $table->enum('permission', ['view', 'edit', 'admin'])->default('view');
                 $table->timestamps();
 
                 $table->unique(['project_id', 'user_id']);
+
+                $table->foreign('project_id')
+                    ->references('id')->on('projects')
+                    ->onDelete('cascade');
+                $table->foreign('user_id')
+                    ->references('id')->on('users')
+                    ->onDelete('cascade');
             });
         }
     }

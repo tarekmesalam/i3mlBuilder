@@ -43,7 +43,7 @@ export function useSessionReconnection(
     const [reconnectError, setReconnectError] = useState<string | null>(null);
     const [sessionIsActive, setSessionIsActive] = useState(initialCanReconnect);
 
-    const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+    const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
     const hasAttemptedReconnectRef = useRef(false);
 
     // Check if there's an active session for the project

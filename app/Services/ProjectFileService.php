@@ -190,15 +190,23 @@ class ProjectFileService
 
     /**
      * Get a streaming response for a file.
+     *
+     * Uses BinaryFileResponse (via response()->download with the absolute
+     * disk path) instead of Storage::download() so large files are streamed
+     * via the kernel's sendfile path, support HTTP Range requests, and
+     * never get loaded fully into PHP memory.
      */
-    public function streamFile(ProjectFile $file): ?\Symfony\Component\HttpFoundation\StreamedResponse
+    public function streamFile(ProjectFile $file): ?\Symfony\Component\HttpFoundation\BinaryFileResponse
     {
         if (! $file->existsOnDisk()) {
             return null;
         }
 
-        return Storage::disk('local')->download(
-            $file->getStoragePath(),
+        $absolutePath = \Illuminate\Support\Facades\Storage::disk('local')
+            ->path($file->getStoragePath());
+
+        return response()->download(
+            $absolutePath,
             $file->original_filename,
             ['Content-Type' => $file->mime_type]
         );

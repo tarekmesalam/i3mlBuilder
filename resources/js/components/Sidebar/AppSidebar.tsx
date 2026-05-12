@@ -169,9 +169,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
                     <Collapsible defaultOpen className="group/collapsible">
                         <SidebarGroup>
                             <CollapsibleTrigger asChild>
-                                <SidebarGroupLabel className="cursor-pointer hover:bg-accent rounded-md px-2 py-1.5 flex items-center justify-between">
+                                <SidebarGroupLabel className="cursor-pointer hover:bg-accent rounded-md px-2 py-1.5 flex items-center justify-between transition-colors">
                                     <span>{t('Projects')}</span>
-                                    <ChevronDown className="h-4 w-4 transition-transform group-data-[state=closed]/collapsible:rotate-[-90deg]" />
+                                    <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=closed]/collapsible:rotate-[-90deg]" />
                                 </SidebarGroupLabel>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
@@ -237,9 +237,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
                         <Collapsible defaultOpen className="group/collapsible">
                             <SidebarGroup>
                                 <CollapsibleTrigger asChild>
-                                    <SidebarGroupLabel className="cursor-pointer hover:bg-accent rounded-md px-2 py-1.5 flex items-center justify-between">
+                                    <SidebarGroupLabel className="cursor-pointer hover:bg-accent rounded-md px-2 py-1.5 flex items-center justify-between transition-colors">
                                         <span>{t('Administration')}</span>
-                                        <ChevronDown className="h-4 w-4 transition-transform group-data-[state=closed]/collapsible:rotate-[-90deg]" />
+                                        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=closed]/collapsible:rotate-[-90deg]" />
                                     </SidebarGroupLabel>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>

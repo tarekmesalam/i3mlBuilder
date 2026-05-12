@@ -33,7 +33,7 @@ export function UserSelect({
     const [users, setUsers] = useState<UserOption[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
-    const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+    const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Debounced search
     useEffect(() => {

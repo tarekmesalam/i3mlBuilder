@@ -95,6 +95,7 @@ export function ChatContainer({
                 <MessageList
                     messages={displayMessages}
                     thinkingDuration={thinkingDuration}
+                    onSelectPrompt={(prompt) => sendMessage(prompt)}
                 />
             </div>
 

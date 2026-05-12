@@ -17,18 +17,34 @@ export default defineConfig({
         chunkSizeWarningLimit: 700,
         rollupOptions: {
             output: {
-                manualChunks: {
-                    // Split large vendor dependencies into separate chunks
-                    'monaco-editor': ['@monaco-editor/react', 'monaco-editor'],
-                    'react-vendor': ['react', 'react-dom', 'react-dom/client'],
-                    'radix-ui': [
-                        '@radix-ui/react-dialog',
-                        '@radix-ui/react-dropdown-menu',
-                        '@radix-ui/react-select',
-                        '@radix-ui/react-tabs',
-                        '@radix-ui/react-tooltip',
-                        '@radix-ui/react-scroll-area',
-                    ],
+                // Use a function-based manualChunks so we can precisely
+                // exclude helper packages (e.g. react-remove-scroll) that
+                // are imported by both React internals and Radix UI —
+                // bundling them into a single 'react-vendor' chunk created
+                // a circular import between react-vendor and radix-ui and
+                // produced a blank white page on first load.
+                manualChunks(id) {
+                    if (!id.includes('node_modules')) {
+                        return undefined;
+                    }
+
+                    if (
+                        id.includes('@monaco-editor/react') ||
+                        id.includes('/monaco-editor/')
+                    ) {
+                        return 'monaco-editor';
+                    }
+
+                    // Strict react-vendor matcher: only the core React
+                    // packages, NOT helpers like react-remove-scroll,
+                    // react-style-singleton, use-sidecar, etc.
+                    if (
+                        /node_modules\/(react|react-dom|scheduler)\//.test(id)
+                    ) {
+                        return 'react-vendor';
+                    }
+
+                    return undefined;
                 },
             },
         },

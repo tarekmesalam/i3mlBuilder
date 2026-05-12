@@ -20,7 +20,7 @@
     ":count files": ":count fichiers",
     ":count file": ":count fichier",
     "of :limit MB": "sur :limit Mo",
-    "Load More (:remaining remaining)": "Charger plus (:count restants)",
+    "Load More (:remaining remaining)": "Charger plus (:remaining restants)",
     "Existing file": "Fichier existant",
     "File deleted": "Fichier supprimé",
     "Deleted :count files": ":count fichiers supprimés",

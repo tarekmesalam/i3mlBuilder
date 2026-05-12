@@ -754,12 +754,21 @@ class BuilderService
 
     /**
      * Undo the last revision in the workspace.
+     *
+     * A 400 response from the builder (e.g. "no more revisions to undo")
+     * is treated as a soft failure — the operation simply has nothing to
+     * do, which is not an exceptional condition. Only network errors and
+     * 5xx responses raise.
      */
     public function undoWorkspace(Builder $builder, string $workspaceId): array
     {
         $response = Http::timeout(30)
             ->withHeaders(['X-Server-Key' => $builder->server_key])
             ->post("{$builder->full_url}/api/undo-workspace/{$workspaceId}");
+
+        if ($response->status() === 400) {
+            return ['success' => false, 'message' => $response->json('error') ?? 'Nothing to undo'];
+        }
 
         if (! $response->successful()) {
             throw new \Exception('Undo failed: '.$response->body());
@@ -770,12 +779,18 @@ class BuilderService
 
     /**
      * Redo the next revision in the workspace.
+     *
+     * See undoWorkspace() — 400 is a soft failure (nothing to redo).
      */
     public function redoWorkspace(Builder $builder, string $workspaceId): array
     {
         $response = Http::timeout(30)
             ->withHeaders(['X-Server-Key' => $builder->server_key])
             ->post("{$builder->full_url}/api/redo-workspace/{$workspaceId}");
+
+        if ($response->status() === 400) {
+            return ['success' => false, 'message' => $response->json('error') ?? 'Nothing to redo'];
+        }
 
         if (! $response->successful()) {
             throw new \Exception('Redo failed: '.$response->body());

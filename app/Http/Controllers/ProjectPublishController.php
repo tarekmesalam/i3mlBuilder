@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\SystemSetting;
 use App\Support\SubdomainHelper;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -94,7 +95,9 @@ class ProjectPublishController extends Controller
         }
 
         if (! SubdomainHelper::isAvailable($subdomain, $project->id)) {
-            return response()->json(['error' => __('This subdomain is already taken.')], 422);
+            // 409 Conflict — subdomain is currently held by another project.
+            // This is a race/conflict, not a validation error on the input.
+            return response()->json(['error' => __('This subdomain is already taken.')], 409);
         }
 
         // Check private visibility permission
@@ -104,13 +107,22 @@ class ProjectPublishController extends Controller
             ], 403);
         }
 
-        $project->update([
-            'subdomain' => $subdomain,
-            'published_title' => $project->published_title ?? $project->name,
-            'published_description' => $project->published_description ?? '',
-            'published_visibility' => $validated['visibility'],
-            'published_at' => $project->published_at ?? now(),
-        ]);
+        try {
+            $project->update([
+                'subdomain' => $subdomain,
+                'published_title' => $project->published_title ?? $project->name,
+                'published_description' => $project->published_description ?? '',
+                'published_visibility' => $validated['visibility'],
+                'published_at' => $project->published_at ?? now(),
+            ]);
+        } catch (QueryException $e) {
+            // Race: another request claimed the same subdomain between our
+            // availability check and the UPDATE. Surface as 409 instead of 500.
+            if ($this->isUniqueViolation($e)) {
+                return response()->json(['error' => __('This subdomain is already taken.')], 409);
+            }
+            throw $e;
+        }
 
         return response()->json([
             'success' => true,
@@ -132,5 +144,15 @@ class ProjectPublishController extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Detect a unique-constraint violation across MySQL and SQLite drivers.
+     */
+    private function isUniqueViolation(QueryException $e): bool
+    {
+        $code = (string) ($e->errorInfo[1] ?? '');
+        // MySQL 1062 (ER_DUP_ENTRY), SQLite 19 (SQLITE_CONSTRAINT)
+        return $code === '1062' || $code === '19' || str_contains($e->getMessage(), 'UNIQUE');
     }
 }

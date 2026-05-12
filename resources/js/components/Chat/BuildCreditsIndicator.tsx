@@ -54,7 +54,7 @@ export function BuildCreditsIndicator({
     return (
         <div
             className={cn(
-                'flex items-center gap-1.5 text-xs',
+                'flex items-center gap-1.5 text-xs transition-colors duration-300',
                 isCritical
                     ? 'text-destructive'
                     : isLow
@@ -65,9 +65,9 @@ export function BuildCreditsIndicator({
             {isRefreshing ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-                <Coins className="h-3 w-3" />
+                <Coins className={cn('h-3 w-3', isCritical && 'animate-pulse')} />
             )}
-            <span>
+            <span className="tabular-nums">
                 {formatCredits(remaining)} / {formatCredits(monthlyLimit)} {t('credits')}
             </span>
         </div>

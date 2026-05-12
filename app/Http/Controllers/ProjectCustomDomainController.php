@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Services\DomainSettingService;
 use App\Services\DomainVerificationService;
 use App\Support\CustomDomainHelper;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Process;
@@ -131,19 +132,31 @@ class ProjectCustomDomainController extends Controller
 
         // Check availability
         if (! CustomDomainHelper::isAvailable($domain, $project->id)) {
+            // 409 Conflict — domain held by another project.
             return response()->json([
                 'success' => false,
                 'error' => __('This domain is already in use.'),
-            ], 422);
+            ], 409);
         }
 
-        // Update project
-        $project->update([
-            'custom_domain' => $domain,
-            'custom_domain_verified' => false,
-            'custom_domain_ssl_status' => null,
-            'custom_domain_verified_at' => null,
-        ]);
+        // Update project — guard against unique-constraint races.
+        try {
+            $project->update([
+                'custom_domain' => $domain,
+                'custom_domain_verified' => false,
+                'custom_domain_ssl_status' => null,
+                'custom_domain_verified_at' => null,
+            ]);
+        } catch (QueryException $e) {
+            $code = (string) ($e->errorInfo[1] ?? '');
+            if ($code === '1062' || $code === '19' || str_contains($e->getMessage(), 'UNIQUE')) {
+                return response()->json([
+                    'success' => false,
+                    'error' => __('This domain is already in use.'),
+                ], 409);
+            }
+            throw $e;
+        }
 
         // Get verification instructions
         $instructions = $this->verificationService->getVerificationInstructions($project->fresh());

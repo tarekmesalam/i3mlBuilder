@@ -213,6 +213,13 @@ export default function Chat({
                 usingOwnKey: updated.usingOwnKey,
             });
         },
+        onProjectStatus: (status) => {
+            // When a build finishes, pull the latest credit balance from the
+            // server so the sidebar reflects credits consumed by the build.
+            if (status.build_status === 'completed' || status.build_status === 'failed') {
+                refreshCredits();
+            }
+        },
     });
     const [viewMode, setViewMode] = useState<ViewMode>(getInitialViewMode);
     const [previewSubMode, setPreviewSubMode] = useState<PreviewSubMode>(getInitialPreviewSubMode);
@@ -306,7 +313,7 @@ export default function Chat({
     const { playSound } = useChatSounds({ settings: soundSettings });
 
     // Build credits tracking with refresh capability
-    const { credits, isRefreshing: isRefreshingCredits, update: updateCredits } = useBuildCredits(buildCredits);
+    const { credits, isRefreshing: isRefreshingCredits, update: updateCredits, refresh: refreshCredits } = useBuildCredits(buildCredits);
 
     // Play sound when project is opened
     const hasPlayedOpenSound = useRef(false);

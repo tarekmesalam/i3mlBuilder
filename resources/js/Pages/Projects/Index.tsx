@@ -258,7 +258,7 @@ export default function ProjectsIndex({ auth, projects, counts, activeTab, filte
         customDomain: string | null;
     } | null>(null);
     const [searchValue, setSearchValue] = useState(filters.search || '');
-    const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+    const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [viewMode, setViewMode] = useState<ViewMode>(() => {
         if (typeof window !== 'undefined') {
             return (localStorage.getItem('projects-view') as ViewMode) || 'grid';

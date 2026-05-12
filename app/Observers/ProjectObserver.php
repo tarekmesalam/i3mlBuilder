@@ -26,4 +26,37 @@ class ProjectObserver
             ]);
         }
     }
+
+    /**
+     * Handle the Project "deleting" event.
+     *
+     * Free up the subdomain and custom_domain when a project is soft-deleted
+     * so other users can claim those names. Without this, trashed projects
+     * keep holding onto identifiers that aren't visible anywhere in the UI.
+     *
+     * Uses direct attribute assignment + saveQuietly() to avoid retriggering
+     * observers (which would loop) and to perform the clear inside the same
+     * row update as the soft-delete itself.
+     */
+    public function deleting(Project $project): void
+    {
+        $changed = false;
+
+        if ($project->subdomain !== null) {
+            $project->subdomain = null;
+            $changed = true;
+        }
+
+        if ($project->custom_domain !== null) {
+            $project->custom_domain = null;
+            $project->custom_domain_verified = false;
+            $project->custom_domain_ssl_status = null;
+            $project->custom_domain_verified_at = null;
+            $changed = true;
+        }
+
+        if ($changed) {
+            $project->saveQuietly();
+        }
+    }
 }

@@ -68,12 +68,28 @@ class SystemSetting extends Model
             ]
         );
 
-        // Write-through: put fresh value directly into individual cache
-        Cache::put("setting.{$key}", self::castValue($storableValue, $type), self::CACHE_TTL);
+        // Write-through: put fresh value directly into individual cache.
+        // Cache failures (broken Redis, file-cache permission issues, etc.)
+        // must NOT block the settings update — log and continue.
+        try {
+            Cache::put("setting.{$key}", self::castValue($storableValue, $type), self::CACHE_TTL);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('SystemSetting cache write failed', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Rebuild group cache (unless deferred by setMany)
         if (! self::$deferGroupCacheRebuild) {
-            self::rebuildGroupCache($setting->group);
+            try {
+                self::rebuildGroupCache($setting->group);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('SystemSetting group cache rebuild failed', [
+                    'group' => $setting->group,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return $setting;
@@ -127,6 +143,10 @@ class SystemSetting extends Model
 
     /**
      * Cast value based on type.
+     *
+     * Hardened: a corrupted encrypted_json value (e.g. APP_KEY rotated
+     * without re-encrypting, or DB row tampered with) MUST NOT crash the
+     * entire app. Decrypt failures fall back to null and are logged.
      */
     protected static function castValue(mixed $value, string $type): mixed
     {
@@ -134,13 +154,22 @@ class SystemSetting extends Model
             return null;
         }
 
-        return match ($type) {
-            'integer' => (int) $value,
-            'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
-            'json' => json_decode($value, true),
-            'encrypted_json' => json_decode(decrypt($value), true),
-            default => $value,
-        };
+        try {
+            return match ($type) {
+                'integer' => (int) $value,
+                'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+                'json' => json_decode($value, true),
+                'encrypted_json' => json_decode(decrypt($value), true),
+                default => $value,
+            };
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('SystemSetting castValue failed', [
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     /**

@@ -27,7 +27,7 @@ export function PendingEditsPanel({
     if (edits.length === 0) return null;
 
     return (
-        <div className="shrink-0 border-t border-border shadow-lg bg-card relative z-50">
+        <div className="shrink-0 border-t border-border shadow-lg bg-card relative z-50 animate-slide-up">
             {/* Header */}
             <div className="px-4 py-2 border-b border-border flex items-center justify-between bg-card">
                 <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ function EditItem({ edit, onRemove }: EditItemProps) {
     const displayNew = truncate(newValue, 30);
 
     return (
-        <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted text-xs">
+        <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted hover:bg-muted/70 transition-colors text-xs animate-fade-in group">
             {/* Element info */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
@@ -128,7 +128,7 @@ function EditItem({ edit, onRemove }: EditItemProps) {
                     variant="ghost"
                     size="sm"
                     onClick={onRemove}
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                     <X className="h-3.5 w-3.5" />
                 </Button>

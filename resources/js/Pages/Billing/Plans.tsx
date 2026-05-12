@@ -314,30 +314,31 @@ export default function Plans({
 
                 {/* Plans Grid */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {plans.map((plan) => {
+                    {plans.map((plan, idx) => {
                         const isCurrentPlan = plan.id === currentPlanId;
                         return (
                             <Card
                                 key={plan.id}
-                                className={`relative flex flex-col ${
+                                style={{ animationDelay: `${idx * 60}ms` }}
+                                className={`relative flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both transition-all hover:-translate-y-1 hover:shadow-xl ${
                                     isCurrentPlan
-                                        ? 'border-primary bg-primary/5 ring-2 ring-primary'
+                                        ? 'border-primary bg-primary/5 ring-2 ring-primary shadow-lg'
                                         : plan.is_popular
-                                        ? 'border-primary shadow-lg'
-                                        : ''
+                                        ? 'border-primary shadow-lg scale-[1.02]'
+                                        : 'hover:border-primary/40'
                                 }`}
                             >
                                 {plan.is_popular && !isCurrentPlan && (
                                     <div className="absolute -top-3 start-1/2 -translate-x-1/2 rtl:translate-x-1/2">
-                                        <Badge className="gap-1 px-3 py-1">
-                                            <Star className="h-3 w-3" />
+                                        <Badge className="gap-1 px-3 py-1 shadow-md bg-gradient-to-r from-primary to-primary/80">
+                                            <Star className="h-3 w-3 fill-current" />
                                             {t('Most Popular')}
                                         </Badge>
                                     </div>
                                 )}
                                 {isCurrentPlan && (
                                     <div className="absolute -top-3 start-1/2 -translate-x-1/2 rtl:translate-x-1/2">
-                                        <Badge variant="secondary" className="px-3 py-1">
+                                        <Badge variant="secondary" className="px-3 py-1 shadow-md">
                                             {t('Current Plan')}
                                         </Badge>
                                     </div>
@@ -350,7 +351,7 @@ export default function Plans({
                                 </CardHeader>
                                 <CardContent className="flex-1">
                                     <div className="mb-6">
-                                        <span className="text-4xl font-bold">
+                                        <span className={`text-4xl font-bold ${plan.is_popular ? 'bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent' : ''}`}>
                                             {formatCurrency(plan.price)}
                                         </span>
                                         <span className="text-muted-foreground text-lg">

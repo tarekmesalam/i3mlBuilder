@@ -13,7 +13,7 @@ import {
     Wrench,
     Check,
     X,
-    Loader2,
+    // Loader2 removed - using animated dot instead
     Brain,
     FilePlus,
     FileEdit,
@@ -75,17 +75,24 @@ export function BuildProgress({ progress, className }: BuildProgressProps) {
     }
 
     return (
-        <Card className={cn('border-primary/20', className)}>
+        <Card className={cn('border-primary/20 transition-all duration-300 animate-fade-in', className)}>
             <CardContent className="p-4 space-y-3">
                 {/* Status Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         {isActive ? (
-                            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                            <span className="relative flex h-2.5 w-2.5">
+                                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 animate-ping" />
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+                            </span>
                         ) : progress.status === 'completed' ? (
-                            <Check className="h-4 w-4 text-primary" />
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 text-primary">
+                                <Check className="h-3 w-3" />
+                            </span>
                         ) : progress.status === 'failed' ? (
-                            <X className="h-4 w-4 text-destructive" />
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive/15 text-destructive">
+                                <X className="h-3 w-3" />
+                            </span>
                         ) : null}
                         <span className="text-sm font-medium">
                             {progress.status === 'connecting' && 'Connecting...'}
@@ -98,17 +105,24 @@ export function BuildProgress({ progress, className }: BuildProgressProps) {
 
                     <div className="flex items-center gap-2">
                         {progress.iterations > 0 && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs transition-all">
                                 Iteration {progress.iterations}
                             </Badge>
                         )}
                         {progress.tokensUsed > 0 && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs tabular-nums transition-all">
                                 {progress.tokensUsed.toLocaleString()} tokens
                             </Badge>
                         )}
                     </div>
                 </div>
+
+                {/* Animated thin progress bar while active */}
+                {isActive && (
+                    <div className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div className="h-full w-1/3 bg-primary/70 rounded-full animate-marquee" />
+                    </div>
+                )}
 
                 {/* Thinking Indicator with Shimmer */}
                 {hasThinking && (

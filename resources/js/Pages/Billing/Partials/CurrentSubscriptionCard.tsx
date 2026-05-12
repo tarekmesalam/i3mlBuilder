@@ -68,20 +68,22 @@ export default function CurrentSubscriptionCard({ subscription }: CurrentSubscri
     const plan = subscription.plan;
 
     return (
-        <Card>
-            <CardHeader>
+        <Card className="overflow-hidden">
+            <CardHeader className="bg-gradient-to-br from-primary/5 via-transparent to-transparent border-b">
                 <div className="flex items-center justify-between">
                     <div>
                         <CardTitle className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5" />
+                            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <CreditCard className="h-4 w-4" />
+                            </span>
                             {t('Current Subscription')}
                         </CardTitle>
-                        <CardDescription>{t('Your active subscription details')}</CardDescription>
+                        <CardDescription className="mt-1">{t('Your active subscription details')}</CardDescription>
                     </div>
                     <StatusBadge status={subscription.status} />
                 </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     {/* Plan Name & Price */}
                     <div className="space-y-1">

@@ -101,7 +101,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         const isBatchEdit = message.content.startsWith('[BATCH_EDIT]');
 
         return (
-            <div className="flex justify-end animate-fade-in">
+            <div className="flex justify-end animate-message-in-right">
                 <div
                     className={cn(
                         'max-w-[85%] min-w-0 overflow-hidden px-4 py-2 rounded-2xl ltr:rounded-br-md rtl:rounded-bl-md break-words',
@@ -144,7 +144,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
     // Assistant messages
     return (
-        <div className="flex justify-start gap-3 animate-fade-in">
+        <div className="flex justify-start gap-3 animate-message-in-left">
             <Avatar className="h-8 w-8 shrink-0">
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                     AI

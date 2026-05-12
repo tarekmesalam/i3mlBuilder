@@ -314,6 +314,11 @@ export function ChatInputWithMentions({
                             Enter
                         </kbd>
                         <span>{t('to send')}</span>
+                        <span className="opacity-50">·</span>
+                        <kbd className="px-1.5 py-0.5 bg-background rounded border border-border text-[10px] font-medium">
+                            Shift+Enter
+                        </kbd>
+                        <span>{t('new line')}</span>
                     </div>
                     <div className="flex items-center gap-2">
                         {storageEnabled && projectId && maxFileSizeMb && onFileUploaded && (

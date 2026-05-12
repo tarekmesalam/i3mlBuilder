@@ -541,14 +541,13 @@ class BuilderProxyController extends Controller
         }
 
         try {
-            $cancelled = $this->builderService->cancelSession(
+            // Best-effort cancel; status is force-updated below regardless.
+            // The session counter on the builder side handles its own cleanup
+            // — no client-side increment/decrement dance needed.
+            $this->builderService->cancelSession(
                 $project->builder,
                 $project->build_session_id
             );
-
-            if ($cancelled) {
-                $this->builderService->completeSession($project->builder);
-            }
         } catch (\Exception $e) {
             Log::warning('Builder cancel HTTP call failed, force-cancelling project', [
                 'project_id' => $project->id,
@@ -575,9 +574,8 @@ class BuilderProxyController extends Controller
     {
         $this->authorize('update', $project);
 
-        if ($project->builder) {
-            $this->builderService->completeSession($project->builder);
-        }
+        // Counter cleanup is handled by the builder itself via its own
+        // session lifecycle — no completeSession call needed here.
 
         $project->update([
             'build_status' => 'completed',

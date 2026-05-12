@@ -18,14 +18,14 @@ export default function Guest({ children }: PropsWithChildren) {
                 <ThemeToggle />
             </div>
 
-            <div className="relative z-10 w-full max-w-md">
+            <div className="relative z-10 w-full max-w-md animate-fade-in">
                 {/* Logo */}
-                <Link href="/" className="flex items-center justify-center mb-8">
+                <Link href="/" className="flex items-center justify-center mb-8 transition-transform hover:scale-105">
                     <ApplicationLogo showText size="lg" />
                 </Link>
 
                 {/* Card */}
-                <Card>
+                <Card className="shadow-xl border-border/60 backdrop-blur-sm bg-card/95">
                     <CardContent>
                         {children}
                     </CardContent>

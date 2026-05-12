@@ -6,11 +6,12 @@ interface MessageListSkeletonProps {
 
 export function MessageListSkeleton({ count = 3 }: MessageListSkeletonProps) {
     return (
-        <div className="space-y-4" data-testid="message-list-skeleton">
+        <div className="space-y-4 px-4 py-4" data-testid="message-list-skeleton">
             {Array.from({ length: count }).map((_, i) => (
                 <MessageBubbleSkeleton
                     key={i}
                     variant={i % 2 === 0 ? 'user' : 'assistant'}
+                    delay={i * 80}
                 />
             ))}
         </div>

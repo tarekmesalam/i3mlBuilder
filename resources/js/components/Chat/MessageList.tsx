@@ -1,14 +1,24 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { MessageBubble } from './MessageBubble';
 import { ChatMessage } from '@/types/chat';
-import { MessageSquare, Lightbulb } from 'lucide-react';
+import { Sparkles, Lightbulb, ArrowRight } from 'lucide-react';
 
 interface MessageListProps {
     messages: ChatMessage[];
     thinkingDuration?: number | null;
+    suggestedPrompts?: string[];
+    onSelectPrompt?: (prompt: string) => void;
 }
 
-export function MessageList({ messages, thinkingDuration }: MessageListProps) {
+
+const DEFAULT_PROMPTS = [
+    'Build a modern landing page for a SaaS product',
+    'Add a pricing section with three tiers',
+    'Create a contact form with validation',
+    'Make the hero section more visually striking',
+];
+
+export function MessageList({ messages, thinkingDuration, suggestedPrompts, onSelectPrompt }: MessageListProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const isNearBottomRef = useRef(true);
 
@@ -28,18 +38,34 @@ export function MessageList({ messages, thinkingDuration }: MessageListProps) {
     }, [messages]);
 
     if (messages.length === 0) {
+        const prompts = suggestedPrompts && suggestedPrompts.length > 0 ? suggestedPrompts : DEFAULT_PROMPTS;
         return (
-            <div className="flex-1 flex items-center justify-center h-full">
-                <div className="text-center">
-                    <div className="h-16 w-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                        <MessageSquare className="h-8 w-8 text-muted-foreground" />
+            <div className="flex-1 flex items-center justify-center h-full px-4">
+                <div className="text-center max-w-md w-full animate-slide-up">
+                    <div className="h-14 w-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center shadow-sm">
+                        <Sparkles className="h-7 w-7 text-primary" />
                     </div>
-                    <h3 className="text-lg font-medium text-foreground mb-1">
-                        Start a conversation
+                    <h3 className="text-lg font-semibold text-foreground mb-1">
+                        What should we build today?
                     </h3>
-                    <p className="text-sm text-muted-foreground max-w-sm">
-                        Send a message to begin chatting with the AI assistant.
+                    <p className="text-sm text-muted-foreground mb-5">
+                        Describe your idea or pick a starting point below.
                     </p>
+                    {onSelectPrompt && (
+                        <div className="grid gap-2 text-start">
+                            {prompts.slice(0, 4).map((prompt, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => onSelectPrompt(prompt)}
+                                    className="group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border border-border/60 bg-card hover:bg-accent hover:border-primary/40 transition-all text-sm text-foreground shadow-sm hover:shadow"
+                                >
+                                    <span className="truncate">{prompt}</span>
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         );
